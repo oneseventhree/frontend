@@ -392,9 +392,14 @@ const createAppConfig = ({
     bundle.config.app({ isProdBuild, latestBuild, isStatsBuild, isTestBuild })
   );
 
-const createDemoConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
+const createDemoConfig = ({
+  isProdBuild,
+  latestBuild,
+  isStatsBuild,
+  isTestBuild,
+}) =>
   createRspackConfig(
-    bundle.config.demo({ isProdBuild, latestBuild, isStatsBuild })
+    bundle.config.demo({ isProdBuild, latestBuild, isStatsBuild, isTestBuild })
   );
 
 const createCastConfig = ({ isProdBuild, latestBuild }) =>
@@ -406,9 +411,19 @@ const createGalleryConfig = ({ isProdBuild, latestBuild }) =>
 const createLandingPageConfig = ({ isProdBuild, latestBuild }) =>
   createRspackConfig(bundle.config.landingPage({ isProdBuild, latestBuild }));
 
-const createE2eTestAppConfig = ({ isProdBuild, latestBuild, isStatsBuild }) =>
+const createE2eTestAppConfig = ({
+  isProdBuild,
+  latestBuild,
+  isStatsBuild,
+  isTestBuild,
+}) =>
   createRspackConfig(
-    bundle.config.e2eTestApp({ isProdBuild, latestBuild, isStatsBuild })
+    bundle.config.e2eTestApp({
+      isProdBuild,
+      latestBuild,
+      isStatsBuild,
+      isTestBuild,
+    })
   );
 
 module.exports = {

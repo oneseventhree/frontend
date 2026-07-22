@@ -20,6 +20,7 @@ import {
   removeLaunchScreen,
   renderLaunchScreenInfoBox,
 } from "../util/launch-screen";
+import { checkOnboardingSurveyToast } from "../util/onboarding-survey";
 import {
   registerServiceWorker,
   supportsServiceWorker,
@@ -58,6 +59,8 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
   @state() private _databaseMigration?: boolean;
 
   private _httpPendingDialogOpen = false;
+
+  private _onboardingSurveyChecked = false;
 
   private _panelUrl: string;
 
@@ -108,6 +111,17 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     ) {
       this.checkHttpPendingConfig();
     }
+    if (
+      changedProps.has("hass") &&
+      !this._onboardingSurveyChecked &&
+      this.hass?.user &&
+      this.hass.systemData
+    ) {
+      this._onboardingSurveyChecked = true;
+      if (!__DEMO__) {
+        checkOnboardingSurveyToast(this, this.hass);
+      }
+    }
   }
 
   protected update(changedProps: PropertyValues<this>) {
@@ -119,7 +133,13 @@ export class HomeAssistantAppEl extends QuickBarMixin(HassElement) {
     ) {
       this.render = this.renderHass;
       this.update = super.update;
-      removeLaunchScreen();
+      // Apps with a native splash screen keep covering the frontend until
+      // frontend/loaded, so the launch screen stays up (invisibly) until the
+      // first panel has rendered and partial-panel-resolver removes it.
+      if (!this.hass.auth.external?.config.hasSplashscreen) {
+        removeLaunchScreen();
+      }
+      this.hass.auth.external?.fireMessage({ type: "frontend/loaded" });
     }
     super.update(changedProps);
   }
