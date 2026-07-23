@@ -4,6 +4,8 @@ You are helping develop the Home Assistant frontend. This repository is a TypeSc
 
 For gallery-specific documentation, demos, page structure, and examples, read `gallery/AGENTS.md` when working under `gallery/`.
 
+For the standalone demo — including how to open a specific demo configuration or page via URL and how to take screenshots of it — read `demo/AGENTS.md`.
+
 ## Essential Commands
 
 ```bash
