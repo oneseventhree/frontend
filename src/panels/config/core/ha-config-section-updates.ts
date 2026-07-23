@@ -58,7 +58,9 @@ interface UpdateGroup {
 
 const SYSTEM_KEY = "__system__";
 const APPS_KEY = "__apps__";
-const INTEGRATIONS_KEY = "__integrations__";
+const DEVICES_KEY = "__devices__";
+const SERVICES_KEY = "__services__";
+const HACS_DOMAIN = "hacs";
 
 @customElement("ha-config-section-updates")
 class HaConfigSectionUpdates extends LitElement {
@@ -150,6 +152,7 @@ class HaConfigSectionUpdates extends LitElement {
       this._entitySources,
       this.hass.localize,
       this.hass.entities,
+      this.hass.devices,
       this.hass.locale.language
     );
 
@@ -408,6 +411,7 @@ class HaConfigSectionUpdates extends LitElement {
       entitySources: EntitySources | undefined,
       localize: HomeAssistant["localize"],
       entityRegistry: HomeAssistant["entities"],
+      deviceRegistry: HomeAssistant["devices"],
       language: string
     ): UpdateGroup[] => {
       if (!entities.length) {
@@ -416,6 +420,7 @@ class HaConfigSectionUpdates extends LitElement {
 
       const systemEntities: UpdateEntity[] = [];
       const appEntities: UpdateEntity[] = [];
+      const hacsEntities: UpdateEntity[] = [];
       const byDomain = new Map<string, UpdateEntity[]>();
       const otherIntegrationEntities: UpdateEntity[] = [];
 
@@ -429,6 +434,10 @@ class HaConfigSectionUpdates extends LitElement {
           entityRegistry[entity.entity_id]?.platform;
         if (domain === "hassio") {
           appEntities.push(entity);
+          continue;
+        }
+        if (domain === HACS_DOMAIN) {
+          hacsEntities.push(entity);
           continue;
         }
         if (!domain) {
@@ -459,6 +468,19 @@ class HaConfigSectionUpdates extends LitElement {
         caseInsensitiveStringCompare(a.title, b.title, language)
       );
 
+      // Entities without a device registry entry are assumed to be devices.
+      const deviceEntities: UpdateEntity[] = [];
+      const serviceEntities: UpdateEntity[] = [];
+      for (const entity of otherIntegrationEntities) {
+        const deviceId = entityRegistry[entity.entity_id]?.device_id;
+        const device = deviceId ? deviceRegistry[deviceId] : undefined;
+        if (device?.entry_type === "service") {
+          serviceEntities.push(entity);
+        } else {
+          deviceEntities.push(entity);
+        }
+      }
+
       const groups: UpdateGroup[] = [];
 
       if (systemEntities.length) {
@@ -472,11 +494,29 @@ class HaConfigSectionUpdates extends LitElement {
 
       groups.push(...multiInstanceGroups);
 
-      if (otherIntegrationEntities.length) {
+      if (deviceEntities.length) {
         groups.push({
-          key: INTEGRATIONS_KEY,
-          title: localize("ui.panel.config.updates.group_integrations"),
-          entities: otherIntegrationEntities,
+          key: DEVICES_KEY,
+          title: localize("ui.panel.config.updates.group_devices"),
+          entities: deviceEntities,
+          showUpdateAll: true,
+        });
+      }
+
+      if (serviceEntities.length) {
+        groups.push({
+          key: SERVICES_KEY,
+          title: localize("ui.panel.config.updates.group_services"),
+          entities: serviceEntities,
+          showUpdateAll: true,
+        });
+      }
+
+      if (hacsEntities.length) {
+        groups.push({
+          key: HACS_DOMAIN,
+          title: domainToName(localize, HACS_DOMAIN),
+          entities: hacsEntities,
           showUpdateAll: true,
         });
       }
