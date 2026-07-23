@@ -13,11 +13,7 @@ yarn dev:demo               # dev server on http://localhost:8090
 yarn dev:demo --background  # detached; also supports --status/--stop/--logs
 ```
 
-If the build fails fetching nightly translations (no GitHub credentials available), skip them and build with English only:
-
-```bash
-SKIP_FETCH_NIGHTLY_TRANSLATIONS=1 yarn dev:demo --background
-```
+The build works offline: when nightly translations cannot be fetched (no network or no GitHub credentials), it falls back to English only.
 
 ## Opening a specific demo
 
@@ -66,11 +62,6 @@ const page = await browser.newPage({ viewport: { width: 1280, height: 800 } });
 await page.goto("http://localhost:8090/?demo=arsaboo#/energy/water");
 await page.waitForLoadState("networkidle");
 await page.waitForTimeout(2000); // let charts finish rendering
-// The dev server error overlay can cover the page when an external resource
-// (e.g. the Cast SDK) fails to load in an offline environment.
-await page.evaluate(() =>
-  document.getElementById("rspack-dev-server-client-overlay")?.remove()
-);
 await page.screenshot({ path: "demo.png", fullPage: true });
 await browser.close();
 ```
