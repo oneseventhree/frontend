@@ -4,4 +4,11 @@ import type { MockHomeAssistant } from "../../../src/fake_data/provide_hass";
 export const mockFloorRegistry = (
   hass: MockHomeAssistant,
   data: FloorRegistryEntry[] = []
-) => hass.mockWS("config/floor_registry/list", () => data);
+) => {
+  hass.mockWS("config/floor_registry/list", () => data);
+  const floors = {};
+  data.forEach((floor) => {
+    floors[floor.floor_id] = floor;
+  });
+  hass.updateHass({ floors });
+};

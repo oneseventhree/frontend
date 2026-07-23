@@ -49,6 +49,8 @@ export const mapEntities = () =>
   });
 
 export const energyEntities = () =>
+  // Assigned to the utility room so the home demo dashboard has no
+  // area-less entities.
   Object.values({
     "sensor.grid_fossil_fuel_percentage": {
       entity_id: "sensor.grid_fossil_fuel_percentage",
@@ -318,4 +320,4 @@ export const energyEntities = () =>
         unit_of_measurement: "W",
       },
     },
-  });
+  }).map((entity) => ({ ...entity, area_id: "utility_room" }));

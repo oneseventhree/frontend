@@ -1,6 +1,6 @@
 import type { TemplateResult } from "lit";
 import type { LocalizeFunc } from "../../../src/common/translations/localize";
-import type { LovelaceConfig } from "../../../src/data/lovelace/config/types";
+import type { LovelaceRawConfig } from "../../../src/data/lovelace/config/types";
 import type { EntityInput } from "../../../src/fake_data/entities/types";
 import type { ThemeSettings } from "../../../src/types";
 
@@ -13,7 +13,7 @@ export interface DemoConfig {
   authorUrl: string;
   description?:
     string | ((localize: LocalizeFunc) => string | TemplateResult<1>);
-  lovelace: (localize: LocalizeFunc) => LovelaceConfig;
+  lovelace: (localize: LocalizeFunc) => LovelaceRawConfig;
   entities: (localize: LocalizeFunc) => EntityInput[];
   theme: DemoTheme;
 }

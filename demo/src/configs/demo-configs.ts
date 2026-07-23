@@ -14,6 +14,7 @@ export const applyDemoTheme = (hass: MockHomeAssistant, theme: DemoTheme) => {
 
 export const demoConfigs: (() => Promise<DemoConfig>)[] = [
   () => import("./sections").then((mod) => mod.demoSections),
+  () => import("./home").then((mod) => mod.demoHome),
   () => import("./arsaboo").then((mod) => mod.demoArsaboo),
   () => import("./teachingbirds").then((mod) => mod.demoTeachingbirds),
   () => import("./kernehed").then((mod) => mod.demoKernehed),
